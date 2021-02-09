@@ -6,10 +6,11 @@ const PORT = 5000
 
 
 require('./models/user')
+require('./models/post')
 
 app.use(express.json())
 app.use(require('./routers/auth'))
-
+app.use(require('./routers/post'))
 
 mongoose.connect(MONGOURI,{ useNewUrlParser: true ,useUnifiedTopology: true})
 mongoose.connection.on('connected',()=>{
