@@ -14,7 +14,7 @@ router.get('/myposts',requireLogin,(req,res)=>{
     })
 })
 
-router.get('/allpost',(req,res)=>{
+router.get('/allpost',requireLogin,(req,res)=>{
     Post.find({postedBy:req.user._id})
     .populate("postedBy","_id name")
     .then(posts=>{

@@ -44,7 +44,7 @@ router.post('/signup',(req,res)=>{
 router.post('/signin',(req,res)=>{
     const {email,name,password} = req.body;
     if(!email || !password){
-        return res.json({error:"Please provide amail and password"})
+        return res.json({error:"Please provide Email and password"})
     }
     User.findOne({email}).then(savedUser=>{
         if(!savedUser){
