@@ -72,13 +72,13 @@ router.put("/like",requireLogin,(req,res)=>{
         }
         )})
     
-        router.put("/comment",requireLogin,(req,res)=>{
-            const comment = {
-                text: req.body.text,
-                postedBy: req.user._id
-            }
-            Post.findByIdAndUpdate(req.body.postId,{
-                $push:{comments:comment}
+ router.put("/comment",requireLogin,(req,res)=>{
+    const comment = {
+        text: req.body.text,
+        postedBy: req.user._id
+    }
+    Post.findByIdAndUpdate(req.body.postId,{
+        $push:{comments:comment}
             },{ new:true})
             .populate("comments.postedBy","_id name ")
             .populate("postedBy","_id name") 
@@ -88,8 +88,26 @@ router.put("/like",requireLogin,(req,res)=>{
                 }else{
                     res.json(result)
                 }
-            }
-            )})
+    }
+    )})
+
+    router.delete('/deletepost/:postId',requireLogin,(req,res)=>{
+         Post.findOne({_id: req.params.postId})
+                .populate("postedBy","_id")
+                .exec((error,post)=>{
+                if(!post || error){
+                    return res.status(422).json({error: error})
+                    }
+                if(post.postedBy._id.toString() === req.user._id.toString()){
+                     post.remove()
+                     .then(result=>{
+                            res.json(result)
+                     }).catch(error=>{
+                            console.log(error)
+                    })
+                }
+        })
+    })
         
 
 module.exports = router
