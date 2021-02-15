@@ -108,6 +108,19 @@ router.put("/like",requireLogin,(req,res)=>{
                 }
         })
     })
+
+    router.get('/getsubpost',requireLogin,(req,res)=>{
+        //return post by user following
+        Post.find({postedBy:{$in:req.user.following}})
+        .populate("postedBy","_id name pic")
+        .populate("comments.postedBy","_id name pic")
+        .sort('-createdAt')
+        .then(posts=>{
+            res.json({posts})
+        }).catch((error)=>{
+            console.log(error)
+        })
+    })
         
 
 module.exports = router
