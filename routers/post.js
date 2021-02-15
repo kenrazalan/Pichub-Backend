@@ -109,7 +109,7 @@ router.put("/like",requireLogin,(req,res)=>{
         })
     })
 
-    router.get('/getsubpost',requireLogin,(req,res)=>{
+    router.get('/followingpost',requireLogin,(req,res)=>{
         //return post by user following
         Post.find({postedBy:{$in:req.user.following}})
         .populate("postedBy","_id name pic")
