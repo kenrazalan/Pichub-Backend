@@ -6,6 +6,27 @@ const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const {JWT_SECRET} = require('../keys')
 const requireLogin = require('../middleware/requireLogin')
+const nodemailer = require('nodemailer')
+const sendGridTransport = require('nodemailer-sendgrid-transport')
+
+
+// const transporter = nodemailer.createTransport(sendGridTransport({
+//     auth:{
+//         api_key:process.env.api_key
+//     }
+// }))
+
+// let transporter = nodemailer.createTransport({
+//     service:"gmail",
+//     auth:{
+//         user: USERNAME,
+//         pass: PASSWORD
+//     },
+//     tls: {
+//         rejectUnauthorized: false
+//     }
+// })
+
 
 
 router.get('/protected',requireLogin,(req,res)=>{
@@ -30,6 +51,12 @@ router.post('/signup',(req,res)=>{
                 pic
             })
             user.save().then(user=>{
+                // transporter.sendMail({
+                //     to: user.email,
+                //     from:"no-reply@insta.com",
+                //     subject:"Signup success",
+                //     html: "<h1>Welcome</h1>"
+                // })
                 res.json({message:"Saved Successfully"})
             }).catch(err=>{
                 console.log(err);
