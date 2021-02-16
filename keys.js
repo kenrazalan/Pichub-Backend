@@ -1,4 +1,4 @@
 module.exports={
-    MONGOURI:"mongodb+srv://kenneth:09295089159@cluster0.ricr8.mongodb.net/<dbname>?retryWrites=true&w=majority",
-    JWT_SECRET:"sdfsadsada"
+    MONGOURI: process.env.MONGOURI,
+    JWT_SECRET: process.env.JWT_SECRET
 }
