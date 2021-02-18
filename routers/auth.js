@@ -29,46 +29,81 @@ const sendGridTransport = require('nodemailer-sendgrid-transport')
 
 
 
-router.get('/protected',requireLogin,(req,res)=>{
-    res.send("hello user")
-})
+// router.get('/protected',requireLogin,(req,res)=>{
+//     res.send("hello user")
+// })
+
+// router.post('/signup',(req,res)=>{
+//     const {name,email,password,pic,username} = req.body
+//     if(!name || !email || !password || !username){
+//        return res.status(422).json({error:"Please add all fields"})
+//     }
+  
+//     User.findOne({email}).then((savedUser)=>{
+//         if(savedUser){
+//             return res.status(422).json({error:"User already Registered"})
+//         }
+//           bcrypt.hash(password,12).then(hashedPassword=>{
+//             const user = new User({
+//                 email,
+//                 password:hashedPassword,
+//                 name,
+//                 pic
+//             })
+//             user.save().then(user=>{
+//                 res.json({message:"Saved Successfully"})
+//             }).catch(err=>{
+//                 console.log(err);
+//             })
+//           })
+
+//         }).catch(err=>{
+//             console.log(err);
+//         })   
+// })
 
 router.post('/signup',(req,res)=>{
-    const {name,email,password,pic} = req.body
-    if(!name || !email || !password){
-       return res.status(422).json({error:"Please add all fields"})
+    const {name,email,password,pic,username} = req.body
+    if(!name || !email || !password ||!username){
+       return res.status(422).json({error: " Please add all fields"})
+    }else if(!/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(email)){
+     return res.status(422).json({error: " Invalid Email"})
     }
-  
-    User.findOne({email}).then((savedUser)=>{
+    User.findOne({email:email})
+         .then((savedUser)=>{
         if(savedUser){
-            return res.status(422).json({error:"User already Registered"})
+         return res.status(422).json({error: "Email already taken"})
         }
-          bcrypt.hash(password,12).then(hashedPassword=>{
-            const user = new User({
-                email,
-                password:hashedPassword,
-                name,
-                pic
-            })
-            user.save().then(user=>{
-                // transporter.sendMail({
-                //     to: user.email,
-                //     from:"no-reply@insta.com",
-                //     subject:"Signup success",
-                //     html: "<h1>Welcome</h1>"
-                // })
-                res.json({message:"Saved Successfully"})
-            }).catch(err=>{
-                console.log(err);
-            })
-          })
-
-        }).catch(err=>{
-            console.log(err);
-        })
-     
+        User.findOne({username: username})
+        .then((user)=>{
+         if(user){
+             return res.status(422).json({error: "user already taken"})
+            }
+        
    
-})
+        bcrypt.hash(password,12)
+        .then(hashedPassword=>{
+         const user = new User({
+             email,
+             password:hashedPassword,
+             name,
+             pic ,
+             username 
+         })
+         user.save()
+         .then(user=>{
+             res.json({message: "Sign up success"})
+         }).catch(error=>{
+             console.log(error)
+         })
+        })
+ 
+     })
+    }).catch(error=>{
+        console.log(error)
+    })
+ })  
+
 router.post('/signin',(req,res)=>{
     const {email,name,password} = req.body;
     if(!email || !password){
