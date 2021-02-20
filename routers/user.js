@@ -35,8 +35,8 @@ router.put("/follow",requireLogin,(req,res)=>{
         User.findByIdAndUpdate(req.user._id,{
             $push:{following:req.body.followId }
         },{new: true}).select("-password")
-        // .populate({ path: "following", select: "pic username name" })
-        // .populate({ path: "followers", select: "pic username name" })
+         .populate({ path: "following", select: "pic username name" })
+         .populate({ path: "followers", select: "pic username name" })
         .then(result=>{
             res.json(result)
         }).catch(error=>{
@@ -56,8 +56,8 @@ router.put("/unfollow",requireLogin,(req,res)=>{
         User.findByIdAndUpdate(req.user._id,{
             $pull:{following:req.body.unfollowId }
         },{new: true}).select("-password")
-        // .populate({ path: "following", select: "pic username name" })
-        // .populate({ path: "followers", select: "pic username name" })
+         .populate({ path: "following", select: "pic username name" })
+         .populate({ path: "followers", select: "pic username name" })
         .then(result=>{
             res.json(result)
         }).catch(error=>{
