@@ -87,6 +87,22 @@ router.post('/searchusers',(req,res)=>{
     })
 })
 
+router.put('/editprofile',requireLogin,(req,res)=>{
+    const { pic, username, name, email } = req.body;
+    const fieldsToUpdate = {};
+    if (pic) fieldsToUpdate.pic = pic;
+    if (username) fieldsToUpdate.username = username;
+    if (name) fieldsToUpdate.name = name;
+    if (email) fieldsToUpdate.email = email;
+    User.findByIdAndUpdate(req.user._id,{$set:{...fieldsToUpdate}},{new: true , runValidators: true}
+        ).select("pic username name email")
+        .then(result=>{
+            res.json(result)
+        }).catch(error=>{
+            return res.status(422).json({error})
+        })
+})
+
 
 
 
