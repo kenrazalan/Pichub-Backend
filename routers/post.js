@@ -50,7 +50,10 @@ router.post('/createpost',requireLogin,(req,res)=>{
 router.put("/like",requireLogin,(req,res)=>{
     Post.findByIdAndUpdate(req.body.postId,{
         $push:{likes:req.user._id}
-    },{ new:true}).exec((err,result)=>{
+    },{ new:true})
+    .populate("postedBy","_id name pic")
+    .populate("comments.postedBy","_id name pic")
+    .exec((err,result)=>{
         if(err){
             return res.status(422).json({error:err})
         }else{
@@ -62,7 +65,10 @@ router.put("/like",requireLogin,(req,res)=>{
     router.put("/unlike",requireLogin,(req,res)=>{
         Post.findByIdAndUpdate(req.body.postId,{
             $pull:{likes:req.user._id}
-        },{ new:true}).exec((err,result)=>{
+        },{ new:true})
+        .populate("postedBy","_id name pic")
+        .populate("comments.postedBy","_id name pic")
+        .exec((err,result)=>{
             if(err){
                 return res.status(422).json({error:err})
             }else{
