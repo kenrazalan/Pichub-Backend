@@ -18,6 +18,7 @@ router.get('/allpost',requireLogin,(req,res)=>{
     Post.find()
     .populate("postedBy","_id name pic")
     .populate("comments.postedBy","_id name pic")
+    .sort('-createdAt')
     .then(posts=>{
         res.json({posts})
     })
@@ -85,8 +86,8 @@ router.put("/like",requireLogin,(req,res)=>{
     Post.findByIdAndUpdate(req.body.postId,{
         $push:{comments:comment}
             },{ new:true})
-            .populate("comments.postedBy","_id name ")
-            .populate("postedBy","_id name") 
+            .populate("comments.postedBy","_id name pic")
+            .populate("postedBy","_id name pic") 
             .exec((err,result)=>{
                 if(err){
                     return res.status(422).json({error:err})
