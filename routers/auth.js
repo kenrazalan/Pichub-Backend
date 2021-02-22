@@ -109,7 +109,10 @@ router.post('/signin',(req,res)=>{
     if(!email || !password){
         return res.json({error:"Please provide Email and password"})
     }
-    User.findOne({email}).then(savedUser=>{
+    User.findOne({email})
+     .populate({ path: "followers", select: "pic username name" })
+     .populate({ path: "following", select: "pic username name" })
+    .then(savedUser=>{
         if(!savedUser){
             res.json({error:"Invalid email or password"})
         }

@@ -8,8 +8,8 @@ const User = mongoose.model("User")
 router.get("/user/:id",requireLogin,(req,res)=>{
     User.findOne({_id: req.params.id})
     .select("-password")
-    // .populate({ path: "followers", select: "pic username name" })
-    // .populate({ path: "following", select: "pic username name" })
+     .populate({ path: "followers", select: "pic username name" })
+     .populate({ path: "following", select: "pic username name" })
     .then(user=>{
         Post.find({postedBy: req.params.id})
         .populate("postedBy","_id name")
