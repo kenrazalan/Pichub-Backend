@@ -20,6 +20,12 @@ router.get('/allpost',requireLogin,(req,res)=>{
     .populate("comments.postedBy","_id name pic")
     .sort('-createdAt')
     .then(posts=>{
+      // const likes =posts.map(post=>post.likes.map(like=>like.toString()))
+        // const likes = posts.likes.map(like=>like.toString())
+       
+        // posts.isLiked = likes.includes(req.user._id)
+        
+        console.log(likes);
         res.json({posts})
     })
     .catch(err=>{
