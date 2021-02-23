@@ -14,6 +14,10 @@ const postSchema = new mongoose.Schema({
         type:ObjectId,
         ref:"User"
     }],
+    // likesCount: {
+    //     type: Number,
+    //     default: 0,
+    //   },
     comments:[{
         text:String,
         postedBy:{type:ObjectId,ref:"User"}

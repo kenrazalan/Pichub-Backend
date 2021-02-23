@@ -63,6 +63,27 @@ router.put("/like",requireLogin,(req,res)=>{
     }
     )})
 
+// router.get("/like",requireLogin,(req,res)=>{
+//     Post.findById(req.body.postId).exec((err,result)=>{
+//         if(err){
+//             return res.status(422).json({err})
+//         }else{
+//             if(result.likes.includes(req.user._id)){
+//                 const index = result.likes.indexOf(req.user._id);
+//                 result.likes.splice(index, 1);
+//                 result.likesCount = result.likesCount - 1;
+//                 result.save()
+//             } else {
+//                 result.likes.push(req.user._id);
+//                 result.likesCount = post.likesCount + 1;
+//                 result.save();
+//               }
+//              return res.json({data:{}})
+//         }
+//     })
+
+// }
+// )
     router.put("/unlike",requireLogin,(req,res)=>{
         Post.findByIdAndUpdate(req.body.postId,{
             $pull:{likes:req.user._id}
