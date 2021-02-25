@@ -24,6 +24,14 @@ router.get("/user/:id",requireLogin,(req,res)=>{
     })
 })
 
+router.get("/allusers",requireLogin,(req,res)=>{
+    User.find().select("-password")
+    .then(user=>res.json(user))
+    .catch(err=>{
+        console.log(err);
+    })
+})
+
 router.put("/follow",requireLogin,(req,res)=>{
     User.findByIdAndUpdate(req.body.followId,{
         $push:{followers: req.user._id}
