@@ -25,7 +25,6 @@ router.get('/allpost',requireLogin,(req,res)=>{
        
         // posts.isLiked = likes.includes(req.user._id)
         
-        console.log(likes);
         res.json({posts})
     })
     .catch(err=>{
