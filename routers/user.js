@@ -26,6 +26,8 @@ router.get("/user/:id",requireLogin,(req,res)=>{
 
 router.get("/allusers",requireLogin,(req,res)=>{
     User.find().select("-password")
+    .populate({ path: "followers", select: "pic username name" })
+    .populate({ path: "following", select: "pic username name" })
     .then(user=>res.json(user))
     .catch(err=>{
         console.log(err);
