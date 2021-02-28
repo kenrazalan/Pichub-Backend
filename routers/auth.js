@@ -3,6 +3,7 @@ const router = express.Router()
 const mongoose = require('mongoose')
 const User = mongoose.model('User')
 const bcrypt = require('bcryptjs')
+const crypto =require('crypto')
 const jwt = require('jsonwebtoken')
 const {JWT_SECRET} = require('../keys')
 const requireLogin = require('../middleware/requireLogin')
@@ -16,16 +17,16 @@ const sendGridTransport = require('nodemailer-sendgrid-transport')
 //     }
 // }))
 
-// let transporter = nodemailer.createTransport({
-//     service:"gmail",
-//     auth:{
-//         user: USERNAME,
-//         pass: PASSWORD
-//     },
-//     tls: {
-//         rejectUnauthorized: false
-//     }
-// })
+let transporter = nodemailer.createTransport({
+    service:"gmail",
+    auth:{
+        user: process.env.USERNAME,
+        pass: process.env.PASSWORD
+    },
+    tls: {
+        rejectUnauthorized: false
+    }
+})
 
 
 
@@ -132,5 +133,34 @@ router.post('/signin',(req,res)=>{
         })
     })
     
+})
+
+router.post("/resetpassword",(req,res)=>{
+    crypto.randomBytes(32,(error,buffer)=>{
+        if(error){
+            console.log(error)
+        }
+        const token = buffer.toString("hex")
+        User.findOne({email: req.body.email})
+        .then((user=>{
+            if(!user){
+                return res.status(422).json({error: "User dont exist with that email"})
+            }
+            user.resetToken = token
+            user.expiredToken = Date.now() + 3600000
+            user.save().then((result)=>{
+                transporter.sendMail({
+                    to: user.email,
+                    from:process.env.USERNAME,
+                    subject: "Password Reset",
+                    html:
+                            `<p>You requested for password reset</p>
+                             <h3>Click this <a href='${EMAIL}/reset/${token}'>link </a>to reset passwrod. </h3>
+                            `
+                })
+                res.json({message:"Please check your email or check spam folder if you don't recieve in inbox"})
+            })
+        }))
+    })
 })
 module.exports= router
