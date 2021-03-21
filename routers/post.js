@@ -126,8 +126,8 @@ router.put("/like",requireLogin,(req,res)=>{
     Post.findByIdAndUpdate(req.body.postId,{
         $push:{comments:comment}
             },{ new:true})
-            .populate("comments.postedBy","_id name pic")
-            .populate("postedBy","_id name pic") 
+            .populate("comments.postedBy","_id name pic followers followings")
+            .populate("postedBy","_id name pic followers followings") 
             .exec((err,result)=>{
                 if(err){
                     return res.status(422).json({error:err})
