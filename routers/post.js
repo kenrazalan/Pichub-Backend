@@ -18,7 +18,7 @@ router.get('/myposts',requireLogin,(req,res)=>{
 router.get('/followingpost',requireLogin,(req,res)=>{
     //return post by user following
     Post.find({postedBy:{$in:[...req.user.following,req.user._id]}})
-    .populate("postedBy","_id name pic")
+    .populate("postedBy","_id name pic followers")
     .populate("comments.postedBy","_id name pic")
     .sort('-createdAt')
     .then(posts=>{
