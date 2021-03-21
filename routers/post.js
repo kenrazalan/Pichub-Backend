@@ -71,8 +71,8 @@ router.put("/like",requireLogin,(req,res)=>{
     Post.findByIdAndUpdate(req.body.postId,{
         $push:{likes:req.user._id}
     },{ new:true})
-    .populate("postedBy","_id name pic")
-    .populate("comments.postedBy","_id name pic")
+    .populate("postedBy","_id name pic followers followings")
+    .populate("comments.postedBy","_id name pic followers followings")
     .exec((err,result)=>{
         if(err){
             return res.status(422).json({error:err})
@@ -107,8 +107,8 @@ router.put("/like",requireLogin,(req,res)=>{
         Post.findByIdAndUpdate(req.body.postId,{
             $pull:{likes:req.user._id}
         },{ new:true})
-        .populate("postedBy","_id name pic")
-        .populate("comments.postedBy","_id name pic")
+        .populate("postedBy","_id name pic followers followings")
+        .populate("comments.postedBy","_id name pic followers followings")
         .exec((err,result)=>{
             if(err){
                 return res.status(422).json({error:err})
