@@ -9,6 +9,7 @@ const {JWT_SECRET} = require('../keys')
 const requireLogin = require('../middleware/requireLogin')
 const nodemailer = require('nodemailer')
 const sendGridTransport = require('nodemailer-sendgrid-transport')
+const {OAuth2Client} = require('google-auth-library')
 
 
 // const transporter = nodemailer.createTransport(sendGridTransport({
@@ -16,6 +17,8 @@ const sendGridTransport = require('nodemailer-sendgrid-transport')
 //         api_key:process.env.api_key
 //     }
 // }))
+
+
 
 let transporter = nodemailer.createTransport({
     service:"gmail",
@@ -63,6 +66,8 @@ let transporter = nodemailer.createTransport({
 //         })   
 // })
 
+const client = new OAuth2Client("292368699085-jb2puctimlk06qjc65noft4bp2v574bu.apps.googleusercontent.com")
+
 router.post('/signup',(req,res)=>{
     const {name,email,password,pic,username} = req.body
     if(!name || !email || !password ||!username){
@@ -90,7 +95,7 @@ router.post('/signup',(req,res)=>{
              name,
              pic ,
              username 
-         })
+         })  
          user.save()
          .then(user=>{
              res.json({message: "Sign up success"})
@@ -133,6 +138,46 @@ router.post('/signin',(req,res)=>{
         })
     })
     
+})
+
+router.post('/googlelogin',(req,res)=>{
+    const {tokenId} = req.body;
+    client.verifyIdToken({idToken:tokenId,audience:"292368699085-jb2puctimlk06qjc65noft4bp2v574bu.apps.googleusercontent.com"})
+    .then(response=>{
+        const {email_verified,name,email,picture,given_name} = response.payload
+        console.log(response)
+        if(email_verified){
+            User.findOne({email}).exec((err,user)=>{
+                if(err){
+                    return res.status(400).json({
+                        error: "Something went wrong"
+                    })
+                }else{
+                    if(user){
+                        const token = jwt.sign({_id:user._id},JWT_SECRET)
+                        const {_id,name,email,followers,following,pic,username} =user
+                        res.json({token,user:{_id,name,email,followers,following,pic,username}})
+                    }else{
+                        let password = email+JWT_SECRET;
+                        let username = given_name;
+                        let pic = picture
+                        let newUser = new User({name,email,password,username,pic})
+                        newUser.save((err,data)=>{
+                            if(err){
+                                return res.status(400).json({
+                                    error: "Something went wrong"
+                                })
+                            }
+                            const token = jwt.sign({_id:data._id},JWT_SECRET)
+                            const {_id,name,email,followers,following,pic,username} =newUser;
+                            res.json({token,user:{_id,name,email,followers,following,pic,username}})
+
+                        })
+                    }
+                }
+            })
+        }
+    })
 })
 
 router.post("/resetpassword",(req,res)=>{
