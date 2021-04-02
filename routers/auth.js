@@ -147,7 +147,10 @@ router.post('/googlelogin',(req,res)=>{
         const {email_verified,name,email,picture,given_name} = response.payload
         console.log(response)
         if(email_verified){
-            User.findOne({email}).exec((err,user)=>{
+            User.findOne({email})
+            .populate({ path: "followers", select: "pic username name" })
+            .populate({ path: "following", select: "pic username name" })
+            .exec((err,user)=>{
                 if(err){
                     return res.status(400).json({
                         error: "Something went wrong"
