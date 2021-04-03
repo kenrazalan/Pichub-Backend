@@ -15,6 +15,17 @@ router.get('/myposts',requireLogin,(req,res)=>{
     })
 })
 
+router.get('/post/:id',requireLogin,(req,res)=>{
+    Post.findOne({_id: req.params.id})
+    .populate("postedBy","_id name pic followers")
+    .populate("comments.postedBy","_id name pic")
+    .then(post=>{
+        res.json({post})
+    }).catch(error=>{
+        return res.status(404).json({error})
+    })
+})
+
 router.get('/followingpost',requireLogin,(req,res)=>{
     //return post by user following
     Post.find({postedBy:{$in:[...req.user.following,req.user._id]}})
