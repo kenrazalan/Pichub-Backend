@@ -6,7 +6,7 @@ const Post = mongoose.model("Post")
 
 router.get('/myposts',requireLogin,(req,res)=>{
     Post.find({postedBy:req.user._id})
-    .populate("postedBy", "_id name pic")
+    .populate("postedBy", "_id name pic username")
     .sort('-createdAt')
     .then(myposts=>{
         res.json({myposts})
@@ -17,8 +17,8 @@ router.get('/myposts',requireLogin,(req,res)=>{
 
 router.get('/post/:id',requireLogin,(req,res)=>{
     Post.findOne({_id: req.params.id})
-    .populate("postedBy","_id name pic followers")
-    .populate("comments.postedBy","_id name pic")
+    .populate("postedBy","_id name pic followers username")
+    .populate("comments.postedBy","_id name pic username")
     .then(post=>{
         res.json({post})
     }).catch(error=>{
@@ -29,8 +29,8 @@ router.get('/post/:id',requireLogin,(req,res)=>{
 router.get('/followingpost',requireLogin,(req,res)=>{
     //return post by user following
     Post.find({postedBy:{$in:[...req.user.following,req.user._id]}})
-    .populate("postedBy","_id name pic followers")
-    .populate("comments.postedBy","_id name pic")
+    .populate("postedBy","_id name pic followers username")
+    .populate("comments.postedBy","_id name pic username")
     .sort('-createdAt')
     .then(posts=>{
         res.json({posts})
@@ -41,8 +41,8 @@ router.get('/followingpost',requireLogin,(req,res)=>{
     
 router.get('/allpost',requireLogin,(req,res)=>{
     Post.find()
-    .populate("postedBy","_id name pic")
-    .populate("comments.postedBy","_id name pic")
+    .populate("postedBy","_id name pic username")
+    .populate("comments.postedBy","_id name pic username")
     .sort('-createdAt')
     .then(posts=>{
       // const likes =posts.map(post=>post.likes.map(like=>like.toString()))
@@ -82,8 +82,8 @@ router.put("/like",requireLogin,(req,res)=>{
     Post.findByIdAndUpdate(req.body.postId,{
         $push:{likes:req.user._id}
     },{ new:true})
-    .populate("postedBy","_id name pic followers followings")
-    .populate("comments.postedBy","_id name pic followers followings")
+    .populate("postedBy","_id name pic followers followings username")
+    .populate("comments.postedBy","_id name pic followers followings username")
     .exec((err,result)=>{
         if(err){
             return res.status(422).json({error:err})
@@ -118,8 +118,8 @@ router.put("/like",requireLogin,(req,res)=>{
         Post.findByIdAndUpdate(req.body.postId,{
             $pull:{likes:req.user._id}
         },{ new:true})
-        .populate("postedBy","_id name pic followers followings")
-        .populate("comments.postedBy","_id name pic followers followings")
+        .populate("postedBy","_id name pic followers followings username")
+        .populate("comments.postedBy","_id name pic followers followings username")
         .exec((err,result)=>{
             if(err){
                 return res.status(422).json({error:err})
@@ -137,8 +137,8 @@ router.put("/like",requireLogin,(req,res)=>{
     Post.findByIdAndUpdate(req.body.postId,{
         $push:{comments:comment}
             },{ new:true})
-            .populate("comments.postedBy","_id name pic followers followings")
-            .populate("postedBy","_id name pic followers followings") 
+            .populate("comments.postedBy","_id name pic followers followings username")
+            .populate("postedBy","_id name pic followers followings username") 
             .exec((err,result)=>{
                 if(err){
                     return res.status(422).json({error:err})
