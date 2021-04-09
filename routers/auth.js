@@ -118,6 +118,7 @@ router.post('/signin',(req,res)=>{
     User.findOne({email})
      .populate({ path: "followers", select: "pic username name" })
      .populate({ path: "following", select: "pic username name" })
+     .populate({ path: "savedPosts", select: "likes comments body photo"})
     .then(savedUser=>{
         if(!savedUser){
             res.json({error:"Invalid email or password"})
@@ -150,6 +151,7 @@ router.post('/googlelogin',(req,res)=>{
             User.findOne({email})
             .populate({ path: "followers", select: "pic username name" })
             .populate({ path: "following", select: "pic username name" })
+            .populate({ path: "savedPosts", select: "likes comments body photo"})
             .exec((err,user)=>{
                 if(err){
                     return res.status(400).json({

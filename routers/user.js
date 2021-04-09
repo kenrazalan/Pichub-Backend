@@ -61,6 +61,7 @@ router.put("/save",requireLogin,(req,res)=>{
     },{new: true})         
     .populate({ path: "following", select: "pic username name" })
     .populate({ path: "followers", select: "pic username name" })
+    .populate({ path: "savedPosts", select: "likes comments body photo"})
     .exec((err,result)=>{
         if(err){
             return res.status(422).json({error:err})
@@ -76,6 +77,7 @@ router.put('/unsave',requireLogin,(req,res)=>{
     },{new: true})
     .populate({ path: "following", select: "pic username name" })
     .populate({ path: "followers", select: "pic username name" })
+    .populate({ path: "savedPosts", select: "likes comments body photo"})
     .exec((err,result)=>{
         if(err){
             return res.status(422).json({error:err})
