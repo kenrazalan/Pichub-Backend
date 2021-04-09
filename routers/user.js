@@ -55,6 +55,37 @@ router.put("/follow",requireLogin,(req,res)=>{
     })
 })
 
+router.put("/save",requireLogin,(req,res)=>{
+    User.findByIdAndUpdate(req.user._id,{
+        $push:{savedPosts: req.body.saveId}
+    },{new: true})         
+    .populate({ path: "following", select: "pic username name" })
+    .populate({ path: "followers", select: "pic username name" })
+    .exec((err,result)=>{
+        if(err){
+            return res.status(422).json({error:err})
+        }else{
+            res.json(result)
+        }
+    }
+    ) 
+})
+router.put('/unsave',requireLogin,(req,res)=>{
+    User.findByIdAndUpdate(req.user._id,{
+        $pull:{savedPosts: req.body.unSaveId}
+    },{new: true})
+    .populate({ path: "following", select: "pic username name" })
+    .populate({ path: "followers", select: "pic username name" })
+    .exec((err,result)=>{
+        if(err){
+            return res.status(422).json({error:err})
+        }else{
+            res.json(result)
+        }
+    }
+    ) 
+})
+
 router.put("/unfollow",requireLogin,(req,res)=>{
     User.findByIdAndUpdate(req.body.unfollowId,{
         $pull:{followers: req.user._id}

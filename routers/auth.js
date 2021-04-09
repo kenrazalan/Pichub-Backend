@@ -127,8 +127,8 @@ router.post('/signin',(req,res)=>{
             if(doMatch){
                 //res.json({message:"Successfully Signed in"})
                 const token = jwt.sign({_id:savedUser._id},JWT_SECRET)
-                const {_id,name,email,followers,following,pic,username} =savedUser
-                res.json({token,user:{_id,name,email,followers,following,pic,username}})
+                const {_id,name,email,followers,following,pic,username,savedPosts} =savedUser
+                res.json({token,user:{_id,name,email,followers,following,pic,username,savedPosts}})
                
             }else{
                return res.status(422).json({error: "Invalid Email or Password"})
@@ -158,8 +158,8 @@ router.post('/googlelogin',(req,res)=>{
                 }else{
                     if(user){
                         const token = jwt.sign({_id:user._id},JWT_SECRET)
-                        const {_id,name,email,followers,following,pic,username} =user
-                        res.json({token,user:{_id,name,email,followers,following,pic,username}})
+                        const {_id,name,email,followers,following,pic,username,savedPosts} =user
+                        res.json({token,user:{_id,name,email,followers,following,pic,username,savedPosts}})
                     }else{
                         let password = email+JWT_SECRET;
                         let username = given_name;
@@ -172,8 +172,8 @@ router.post('/googlelogin',(req,res)=>{
                                 })
                             }
                             const token = jwt.sign({_id:data._id},JWT_SECRET)
-                            const {_id,name,email,followers,following,pic,username} =newUser;
-                            res.json({token,user:{_id,name,email,followers,following,pic,username}})
+                            const {_id,name,email,followers,following,pic,username,savedPosts} =newUser;
+                            res.json({token,user:{_id,name,email,followers,following,pic,username,savedPosts}})
 
                         })
                     }

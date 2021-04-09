@@ -24,6 +24,7 @@ const userSchema = new mongoose.Schema({
         type: String,
         default:"https://res.cloudinary.com/dtwrzv0of/image/upload/v1602439487/profile_pic_smohie.png"
     },
+    savedPosts: [{ type: ObjectId, ref:"Post"}],
     followers:[{type: ObjectId, ref:"User"}],
     following:[{type: ObjectId, ref:"User"}]
 })
