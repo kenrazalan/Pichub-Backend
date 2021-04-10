@@ -10,6 +10,7 @@ router.get("/user/:id",requireLogin,(req,res)=>{
     .select("-password")
      .populate({ path: "followers", select: "pic username name followers following" })
      .populate({ path: "following", select: "pic username name followers following" })
+     .populate({ path: "savedPosts", select: "likes comments body photo"})
     .then(user=>{
         Post.find({postedBy: req.params.id})
         .populate("postedBy","_id name")
