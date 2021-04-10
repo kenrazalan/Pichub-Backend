@@ -29,6 +29,7 @@ router.get("/allusers",requireLogin,(req,res)=>{
     User.find({_id:{$ne: req.user._id}}).select("-password")
     .populate({ path: "followers", select: "pic username name" })
     .populate({ path: "following", select: "pic username name" })
+    .populate({ path: "savedPosts", select: "likes comments body photo"})
     .then(user=>res.json(user))
     .catch(err=>{
         console.log(err);
@@ -48,6 +49,7 @@ router.put("/follow",requireLogin,(req,res)=>{
         },{new: true}).select("-password")
          .populate({ path: "following", select: "pic username name" })
          .populate({ path: "followers", select: "pic username name" })
+         .populate({ path: "savedPosts", select: "likes comments body photo"})
         .then(result=>{
             res.json(result)
         }).catch(error=>{
@@ -102,6 +104,7 @@ router.put("/unfollow",requireLogin,(req,res)=>{
         },{new: true}).select("-password")
          .populate({ path: "following", select: "pic username name" })
          .populate({ path: "followers", select: "pic username name" })
+         .populate({ path: "savedPosts", select: "likes comments body photo"})
         .then(result=>{
             res.json(result)
         }).catch(error=>{
