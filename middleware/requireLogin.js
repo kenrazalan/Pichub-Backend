@@ -11,14 +11,12 @@ module.exports = (req,res,next)=>{
     }
    const token= authorization.replace("Bearer ","")
    jwt.verify(token,JWT_SECRET,(err,payload)=>{
-       if(err){
-         return res.status(401).json({error:"You must be login"})
-       }
+       if(err){ return res.status(401).json({error:"You must be login"}) }
        const {_id} = payload
-       User.findById(_id).then(userData=>{
+       User.findById(_id)
+       .then(userData => {
            req.user = userData
-            next()
+           next()
        })
-      
    })
 }

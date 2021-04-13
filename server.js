@@ -13,9 +13,9 @@ require('./models/post')
 
 app.use(cors())
 app.use(express.json())
-app.use(require('./routers/auth'))
-app.use(require('./routers/post'))
-app.use(require('./routers/user'))
+app.use(require('./routes/auth'))
+app.use(require('./routes/post'))
+app.use(require('./routes/user'))
 
 mongoose.connect(MONGOURI,{ useNewUrlParser: true ,useUnifiedTopology: true})
 mongoose.connection.on('connected',()=>{

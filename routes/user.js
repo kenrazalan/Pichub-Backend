@@ -11,18 +11,14 @@ router.get("/user/:id",requireLogin,(req,res)=>{
      .populate({ path: "followers", select: "pic username name followers following" })
      .populate({ path: "following", select: "pic username name followers following" })
      .populate({ path: "savedPosts", select: "likes comments body photo"})
-    .then(user=>{
+     .then(user=>{
         Post.find({postedBy: req.params.id})
         .populate("postedBy","_id name")
         .exec((error,posts)=>{
-            if(error){
-                return res.status(422).json({error})
-            }
+            if(error){ return res.status(422).json({error}) }
             res.json({user,posts})
         })
-    }).catch(error=>{
-        return res.status(404).json({error: "User not found"})
-    })
+    }).catch(error=>{  return res.status(404).json({error: "User not found"}) })
 })
 
 router.get("/allusers",requireLogin,(req,res)=>{
@@ -31,9 +27,7 @@ router.get("/allusers",requireLogin,(req,res)=>{
     .populate({ path: "following", select: "pic username name" })
     .populate({ path: "savedPosts", select: "likes comments body photo"})
     .then(user=>res.json(user))
-    .catch(err=>{
-        console.log(err);
-    })
+    .catch(err=>{ console.log(err); })
 })
 
 router.put("/follow",requireLogin,(req,res)=>{
@@ -41,85 +35,58 @@ router.put("/follow",requireLogin,(req,res)=>{
         $push:{followers: req.user._id}
     },{new: true}
     ,(error,result)=>{
-        if(error){
-            return res.status(422).json({error})
-        }
+        if(error){ return res.status(422).json({error}) }
         User.findByIdAndUpdate(req.user._id,{
-            $push:{following:req.body.followId }
-        },{new: true}).select("-password")
+            $push:{following:req.body.followId } },{new: true})
+          .select("-password")
          .populate({ path: "following", select: "pic username name" })
          .populate({ path: "followers", select: "pic username name" })
          .populate({ path: "savedPosts", select: "likes comments body photo"})
-        .then(result=>{
-            res.json(result)
-        }).catch(error=>{
-            return res.status(422).json({error})
-        })
+         .then(result => { res.json(result) })
+         .catch(error => { return res.status(422).json({error}) })
     })
 })
 
 router.put("/save",requireLogin,(req,res)=>{
-    User.findByIdAndUpdate(req.user._id,{
-        $push:{savedPosts: req.body.saveId}
-    },{new: true})         
+    User.findByIdAndUpdate(req.user._id,{  $push:{savedPosts: req.body.saveId} },{new: true})         
     .populate({ path: "following", select: "pic username name" })
     .populate({ path: "followers", select: "pic username name" })
     .populate({ path: "savedPosts", select: "likes comments body photo"})
     .exec((err,result)=>{
-        if(err){
-            return res.status(422).json({error:err})
-        }else{
-            res.json(result)
-        }
-    }
-    ) 
+        if(err){ return res.status(422).json({error:err}) }
+        else{ res.json(result) }
+    }) 
 })
+
 router.put('/unsave',requireLogin,(req,res)=>{
-    User.findByIdAndUpdate(req.user._id,{
-        $pull:{savedPosts: req.body.unSaveId}
-    },{new: true})
+    User.findByIdAndUpdate(req.user._id,{ $pull:{savedPosts: req.body.unSaveId} },{new: true})
     .populate({ path: "following", select: "pic username name" })
     .populate({ path: "followers", select: "pic username name" })
     .populate({ path: "savedPosts", select: "likes comments body photo"})
     .exec((err,result)=>{
-        if(err){
-            return res.status(422).json({error:err})
-        }else{
-            res.json(result)
-        }
-    }
-    ) 
+        if(err){ return res.status(422).json({error:err}) }
+        else{ res.json(result) }
+    }) 
 })
 
 router.put("/unfollow",requireLogin,(req,res)=>{
-    User.findByIdAndUpdate(req.body.unfollowId,{
-        $pull:{followers: req.user._id}
-    },{new: true}
+    User.findByIdAndUpdate(req.body.unfollowId,{ $pull:{followers: req.user._id} },{new: true}
     ,(error,result)=>{
-        if(error){
-            return res.status(422).json({error})
-        }
-        User.findByIdAndUpdate(req.user._id,{
-            $pull:{following:req.body.unfollowId }
-        },{new: true}).select("-password")
+        if(error){ return res.status(422).json({error}) }
+        User.findByIdAndUpdate(req.user._id,{ $pull:{following:req.body.unfollowId } },{new: true})
+         .select("-password")
          .populate({ path: "following", select: "pic username name" })
          .populate({ path: "followers", select: "pic username name" })
          .populate({ path: "savedPosts", select: "likes comments body photo"})
-        .then(result=>{
-            res.json(result)
-        }).catch(error=>{
-            return res.status(422).json({error})
-        })
-    }
-    )
+        .then(result => { res.json(result) })
+        .catch(error => { return res.status(422).json({error}) })
+    })
 })
 
 router.put("/updatepic",requireLogin,(req,res)=>{
     User.findByIdAndUpdate(req.user._id,{$set:{pic:req.body.pic}},{new: true}
         ,(error,result)=>{
-            if(error){
-                return res.status(422).json({error:"Cant post picture"})
-            }
+            if(error){ return res.status(422).json({error:"Cant post picture"}) }
             res.json(result)
         })
 })
@@ -127,11 +94,8 @@ router.post('/searchusers',(req,res)=>{
     let userPattern = new RegExp("^"+req.body.query)
     User.find({name:{$regex:userPattern}})
     .select("_id name")
-    .then(user=>{
-        res.json({user})
-    }).catch(error=>{
-        console.log(error)
-    })
+    .then(user=>{ res.json({user}) })
+    .catch(error=>{ console.log(error) })
 })
 
 router.put('/editprofile',requireLogin,(req,res)=>{
@@ -141,23 +105,17 @@ router.put('/editprofile',requireLogin,(req,res)=>{
     if (username) fieldsToUpdate.username = username;
     if (name) fieldsToUpdate.name = name;
     if (email) fieldsToUpdate.email = email;
-    User.findByIdAndUpdate(req.user._id,{$set:{...fieldsToUpdate}},{new: true , runValidators: true}
-        ).select("pic username name email")
-        .then(result=>{
-            res.json(result)
-        }).catch(error=>{
-            return res.status(422).json({error})
-        })
+    User.findByIdAndUpdate(req.user._id,{$set:{...fieldsToUpdate}},{new: true , runValidators: true})
+        .select("pic username name email")
+        .then(result=>{ res.json(result) })
+        .catch(error=>{  return res.status(422).json({error}) })
 })
 router.post('/searchusers',(req,res)=>{
     let userPattern = new RegExp("^"+req.body.query)
     User.find({name:{$regex:userPattern}})
     .select("_id name")
-    .then(user=>{
-        res.json({user})
-    }).catch(error=>{
-        console.log(error)
-    })
+    .then(user=>{  res.json({user}) })
+    .catch(error=>{ console.log(error) })
 })
 
 
