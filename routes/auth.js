@@ -20,20 +20,20 @@ let transporter = nodemailer.createTransport({
 
 
 const client = new OAuth2Client("292368699085-jb2puctimlk06qjc65noft4bp2v574bu.apps.googleusercontent.com")
-
+const emailValidation = '!/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/'
 router.post('/signup',(req,res)=>{
     const {name,email,password,pic,username} = req.body
     if(!name || !email || !password ||!username){
        return res.status(422).json({error: " Please add all fields"})
     }
-    else if(!/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(email)){
+    else if(`${emailValidation}.test(${email})`){
      return res.status(422).json({error: " Invalid Email"})
     }
     User.findOne({email:email}).then((savedUser)=>{
         if(savedUser){ return res.status(422).json({error: "Email already taken"}) }
         User.findOne({username: username})
         .then((user)=>{
-         if(user){ return res.status(422).json({error: "user already taken"}) }
+         if(user){ return res.status(422).json({error: "Username already taken"}) }
         bcrypt.hash(password,12)
         .then(hashedPassword => {
          const user = new User({
