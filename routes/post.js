@@ -3,42 +3,43 @@ const router = express.Router()
 const mongoose = require('mongoose')
 const requireLogin = require('../middleware/requireLogin')
 const Post = mongoose.model("Post")
+const {myPosts,goToPost,followingPosts,allPosts,createPost} = require('../controllers/post')
+
+// router.get('/myposts',requireLogin, async (req,res) => {
+//     const myposts = await Post.find({postedBy: req.user._id})
+//     .populate("postedBy", "_id name pic username")
+//     .sort('-createdAt').lean().exec()
+//     res.status(200).json({myposts})
+// })
+router.route("/myposts").get(requireLogin,myPosts)
+
+// router.get('/post/:id',requireLogin, async (req,res)=>{
+//     const post = await Post.findOne({_id: req.params.id})
+//     .populate("postedBy","_id name pic followers username")
+//     .populate("comments.postedBy","_id name pic username")
+//     .lean().exec()
+//     res.status(200).json({post})
+// })
+router.route('/post/:id').get(requireLogin,goToPost)
 
 
-router.get('/myposts',requireLogin, async (req,res) => {
-    const myposts = await Post.find({postedBy: req.user._id})
-    .populate("postedBy", "_id name pic username")
-    .sort('-createdAt').lean().exec()
-    res.status(200).json({myposts})
-})
+// router.get('/followingpost',requireLogin, async(req,res)=>{
+//     const posts = await Post.find({postedBy:{$in:[...req.user.following,req.user._id]}})
+//        .populate("postedBy","_id name pic followers username")
+//        .populate("comments.postedBy","_id name pic username")
+//        .sort('-createdAt').lean().exec()
+//         res.status(200).json({posts})
+// })
+router.route('/followingpost').get(requireLogin,followingPosts)
 
-
-router.get('/post/:id',requireLogin, async (req,res)=>{
-    const post = await Post.findOne({_id: req.params.id})
-    .populate("postedBy","_id name pic followers username")
-    .populate("comments.postedBy","_id name pic username")
-    .lean().exec()
-    res.status(200).json({post})
-})
-
-
-router.get('/followingpost',requireLogin, async(req,res)=>{
-    const posts = await Post.find({postedBy:{$in:[...req.user.following,req.user._id]}})
-       .populate("postedBy","_id name pic followers username")
-       .populate("comments.postedBy","_id name pic username")
-       .sort('-createdAt').lean().exec()
-        res.status(200).json({posts})
-})
-
-
-router.get('/allpost',requireLogin, async (req,res) => {
-     const posts = await Post.find()
-     .populate("postedBy","_id name pic username")
-     .populate("comments.postedBy","_id name pic username")
-     .sort('-createdAt').lean().exec()
-     res.status(200).json({posts})
-})
-
+// router.get('/allpost',requireLogin, async (req,res) => {
+//      const posts = await Post.find()
+//      .populate("postedBy","_id name pic username")
+//      .populate("comments.postedBy","_id name pic username")
+//      .sort('-createdAt').lean().exec()
+//      res.status(200).json({posts})
+// })
+router.route('/allpost').get(requireLogin,allPosts)
 
 router.post('/createpost',requireLogin, async (req,res) =>{
     const {body,pic} = req.body
@@ -52,7 +53,7 @@ router.post('/createpost',requireLogin, async (req,res) =>{
     post.save()
     res.status(200).json({post})
 })
-
+// router.route('/createpost').post(requireLogin,createPost)
 
 router.put('/like',requireLogin,async (req,res)=> {
    const like = await Post.findByIdAndUpdate(req.body.postId,
