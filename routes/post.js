@@ -1,8 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const mongoose = require('mongoose')
 const requireLogin = require('../middleware/requireLogin')
-const Post = mongoose.model("Post")
 const {myPosts,goToPost,followingPosts,allPosts,createPost, deletePost, comment, likePost, unlikePost} = require('../controllers/post')
 
 
