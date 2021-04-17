@@ -63,19 +63,26 @@ exports.likePost =  async (req,res)=> {
         .lean().exec()
         res.status(200).json({unlike})
     }
-exports.comment =  async (req,res)=> {
-    const like = await Post.findByIdAndUpdate(req.body.postId,
-     { $push:{likes:req.user._id}},{new: true})
-     .populate("postedBy","_id name pic followers followings username")
-     .populate("comments.postedBy","_id name pic followers followings username")
-     .lean().exec()
-     res.status(200).json({like})
+exports.comment = async (req,res) => {
+    const comment = {
+        text : req.body.text,
+        postedBy: req.user._id
+    }
+    const comments = await Post.findByIdAndUpdate(req.body.postId,{
+        $push:{comments:comment} },{ new:true})
+        .populate("comments.postedBy","_id name pic followers followings username")
+        .populate("postedBy","_id name pic followers followings username") 
+        .lean().exec()
+        res.status(200).json(comments)
 }
-exports.deletePost =  async (req,res)=> {
-    const like = await Post.findByIdAndUpdate(req.body.postId,
-     { $push:{likes:req.user._id}},{new: true})
-     .populate("postedBy","_id name pic followers followings username")
-     .populate("comments.postedBy","_id name pic followers followings username")
-     .lean().exec()
-     res.status(200).json({like})
+exports.deletePost =  async (req,res) => {
+    const post = await Post.findOne({_id: req.params.postId})
+    .populate("postedBy","_id")
+    .exec((error,post)=>{
+            if(!post || error) { return res.status(422).json({error}) } 
+                if(post.postedBy._id.toString() === req.user._id.toString()){
+                    post.remove()
+                    res.status(200).json(post)
+                }
+    })
 }
