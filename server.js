@@ -17,7 +17,7 @@ app.use(require('./routes/auth'))
 app.use(require('./routes/post'))
 app.use(require('./routes/user'))
 
-mongoose.connect(MONGOURI,{ useNewUrlParser: true ,useUnifiedTopology: true})
+mongoose.connect(MONGOURI,{ useNewUrlParser: true ,useUnifiedTopology: true ,useFindAndModify: false,useCreateIndex: true })
 mongoose.connection.on('connected',()=>{
     console.log('Connected to Mongo');
 })
