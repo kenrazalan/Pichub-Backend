@@ -28,5 +28,5 @@ mongoose.connection.on('error',(err)=>{
 
 
 app.listen(PORT,()=>{
-    console.log(`Server listen to port at ${process.env.NODE_ENV}mode at ${PORT}`);
+    console.log(`Server listen to port ${PORT}`);
 })
